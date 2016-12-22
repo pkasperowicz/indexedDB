@@ -7,10 +7,13 @@
     "react-scripts": "0.8.4"
   },
   "dependencies": {
+    "dexie": "^1.5.1",
     "react": "^15.4.1",
-    "react-dom": "^15.4.1"
+    "react-dom": "^15.4.1",
+    "react-dropzone": "^3.7.3"
   },
   "scripts": {
+    "flow": "flow",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

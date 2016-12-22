@@ -1,0 +1,13 @@
+
+
+.images {
+    display: flex;
+}
+
+.single-image {
+    flex: 0 1 100px;
+}
+
+.preview {
+    width: 100px;
+}
