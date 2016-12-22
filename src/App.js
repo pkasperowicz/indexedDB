@@ -1,19 +1,26 @@
+// @flow
 import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Images from './Images';
 import Database from './Database';
+import type Image from './model/Image';
 
 class App extends Component {
-    constructor(props, context) {
+
+    state: {
+      images: Image[]
+    };
+
+    constructor(props: {}, context: {}) {
         super(props, context);
         this.state = {
-            files: []
+            images: []
         };
     }
 
     componentWillMount() {
-        Database.getFiles().then(files => this.setState({files}));
+        Database.getImages().then(images => this.setState({images}));
     }
 
     render() {
@@ -23,9 +30,9 @@ class App extends Component {
                     <img src={logo} className="App-logo" alt="logo"/>
                     <h2>Welcome to React</h2>
                 </div>
-                <p className="App-intro">
-                    <Images files={this.state.files}/>
-                </p>
+                <div className="App-intro">
+                    <Images images={this.state.images}/>
+                </div>
             </div>
         );
     }

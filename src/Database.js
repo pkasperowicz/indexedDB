@@ -1,28 +1,36 @@
 // @flow
 import Dexie from 'dexie';
+import Image from './model/Image';
 
 const Database = new Dexie("images");
 
 Database.version(1).stores({
-    images: '++id,name,file,size,lastModifiedDate'
+    images: '++id,name,size'
 });
 
 Database.open().catch(function (e) {
     console.error ("Open failed: " + e);
 });
 
-function getFiles () : Promise<File[]> {
+Database.images.mapToClass (Image);
+
+function getImages () : Promise<Image[]> {
     return Database.images
         .toCollection()
-        .toArray()
-        .then( images => images
-            .map( image => image.file )
-            .map( file => file.preview = URL.createObjectURL(file) )
-        );
+        .toArray();
+}
+
+function readFile (file: File) : Promise<Uint8Array>  {
+    return new Promise(function (resolve) {
+        let reader = new FileReader();
+        reader.onload = e => resolve(new Uint8Array(e.target.result));
+        reader.readAsArrayBuffer(file);
+    });
 }
 
 function addFile (file: File) {
-    Database.images.add({ name: file.name, size: file.size, lastModifiedDate: file.lastModifiedDate, file});
+    readFile(file)
+        .then(data => Database.images.add({ name: file.name, size: file.size, data}));
 }
 
-export default { getFiles, addFile };
+export default { getImages, addFile };
