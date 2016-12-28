@@ -10,6 +10,15 @@ Database.version(1).stores({
 
 Database.version(2).stores({
     images: '++id,caption,city,country,*keywords'
+}).upgrade(function () {
+    return db.images.modify(image => {
+        image.city = null;
+        image.country = null;
+        image.caption = image.name;
+        image.keywords = [];
+        delete image.name;
+        delete image.size;
+    });
 });
 
 Database.open().catch(function (e) {
