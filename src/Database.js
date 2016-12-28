@@ -11,7 +11,7 @@ Database.version(1).stores({
 Database.version(2).stores({
     images: '++id,caption,city,country,*keywords'
 }).upgrade(function () {
-    return db.images.modify(image => {
+    return Database.images.modify(image => {
         image.city = null;
         image.country = null;
         image.caption = image.name;
