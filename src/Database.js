@@ -8,6 +8,10 @@ Database.version(1).stores({
     images: '++id,name,size'
 });
 
+Database.version(2).stores({
+    images: '++id,caption,city,country,*keywords'
+});
+
 Database.open().catch(function (e) {
     console.error ("Open failed: " + e);
 });
@@ -20,17 +24,26 @@ function getImages () : Promise<Image[]> {
         .toArray();
 }
 
-function readFile (file: File) : Promise<Uint8Array>  {
+function readFile (file: File) : Promise<ArrayBuffer>  {
     return new Promise(function (resolve) {
         let reader = new FileReader();
-        reader.onload = e => resolve(new Uint8Array(e.target.result));
+        reader.onload = e => resolve(e.target.result);
         reader.readAsArrayBuffer(file);
     });
 }
 
-function addFile (file: File) {
-    readFile(file)
-        .then(data => Database.images.add({ name: file.name, size: file.size, data}));
+function addFile (file: File) : Promise<number> {
+    return readFile(file)
+        .then(arrayBuffer => Database.images.add(new Image(arrayBuffer)));
 }
 
-export default { getImages, addFile };
+function searchImages (query: string) : Promise<Image[]> {
+    return Database.images
+        .where('keywords').startsWithIgnoreCase(query)
+        .or('city').startsWithIgnoreCase(query)
+        .or('country').startsWithIgnoreCase(query)
+        .or('caption').startsWithIgnoreCase(query)
+        .toArray();
+}
+
+export default { getImages, addFile, searchImages };

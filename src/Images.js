@@ -9,12 +9,20 @@ import type Image from './model/Image';
 class Images extends Component {
 
     props: {
-        images: Image[]
+        images: Image[],
+        update: Function
     };
+
+    update (newFiles: File[]) {
+        let addedFiles = newFiles.map(Database.addFile);
+
+        Promise.all(addedFiles)
+            .then(this.props.update);
+    }
 
     render () {
         return <div>
-                <Dropzone onDrop={newFiles => newFiles.map(Database.addFile)} >
+                <Dropzone onDrop={this.update.bind(this)} >
                     Drop files here
                 </Dropzone>
                 <div>
@@ -22,7 +30,7 @@ class Images extends Component {
                     <div className="images">
                         {this.props.images.map(image =>
                             <div key={uuid.v4()} className="single-image">
-                                <img className="preview" src={image.getUrl()} alt={image.name} />
+                                <img className="preview" src={image.getUrl()} alt={image.caption} />
                             </div> )}
                     </div>
                 </div>

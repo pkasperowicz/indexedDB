@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "exif-parser": "^0.1.9",
     "flow-bin": "^0.37.0",
     "react-scripts": "0.8.4"
   },
   "dependencies": {
+    "buffer": "^5.0.2",
     "dexie": "^1.5.1",
+    "node-iptc": "^1.0.4",
     "node-uuid": "^1.4.7",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",

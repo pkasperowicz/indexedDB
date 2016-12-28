@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Images from './Images';
+import SearchBox from './SearchBox';
 import Database from './Database';
 import type Image from './model/Image';
 
@@ -20,7 +21,23 @@ class App extends Component {
     }
 
     componentWillMount() {
-        Database.getImages().then(images => this.setState({images}));
+        this.update();
+    }
+
+    update() {
+        Database
+            .getImages()
+            .then(images => this.setState({images}));
+    }
+
+    onSearch(query: string) {
+        if (query === '') {
+            this.update();
+        } else {
+            Database
+                .searchImages(query)
+                .then(images => this.setState({images}));
+        }
     }
 
     render() {
@@ -31,7 +48,8 @@ class App extends Component {
                     <h2>Welcome to React</h2>
                 </div>
                 <div className="App-intro">
-                    <Images images={this.state.images}/>
+                    <SearchBox onChange={this.onSearch.bind(this)} />
+                    <Images images={this.state.images} update={this.update.bind(this)} />
                 </div>
             </div>
         );
