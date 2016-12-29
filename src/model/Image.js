@@ -1,19 +1,38 @@
+// @flow
 import itpc from 'node-iptc';
-import { Buffer } from 'buffer';
+import {Buffer} from 'buffer';
+
+class StringBuffer extends Buffer {
+
+    // This is workaround for using itpc lib in web browser
+    // this 5 lines was copied from itpc lib
+    getString (offset, length) {
+        var string = [];
+        for (var i = offset; i < offset + length; i++) {
+            string.push(String.fromCharCode(this[i]));
+        }
+        return string.join('');
+    }
+}
+
+function maybeString<T> (data: T): ?string {
+    return data instanceof String ? data : null;
+}
 
 class Image {
     caption: ?string;
     city: ?string;
     country: ?string;
     keywords: string[];
-    data: Uint32Array;
+    data: Uint8Array;
 
     constructor (arrayBuffer : ArrayBuffer) {
-        let result : { [id: string] : string|string[] } = itpc(new Buffer(arrayBuffer));
-        this.caption = result['caption'];
-        this.city = result['city'];
-        this.country = result['country_or_primary_location_name'];
-        this.keywords = result['keywords'] || [];
+        let buffer : StringBuffer = new StringBuffer(arrayBuffer);
+        let result : { [id: string] : string|string[] } = itpc(buffer);
+        this.caption = maybeString(result['caption']);
+        this.city = maybeString(result['city']);
+        this.country = maybeString(result['country_or_primary_location_name']);
+        this.keywords = result['keywords'] instanceof Array ? result['keywords'] : [];
 
         this.data = new Uint8Array(arrayBuffer);
     }
@@ -23,15 +42,5 @@ class Image {
         return URL.createObjectURL(blob);
     }
 }
-
-
-// This is workaround for using itpc lib in web browser
-// this 5 lines was copied from itpc lib
-Buffer.prototype.getString = function (offset, length) {
-    var string = [];
-    for (var i = offset; i < offset + length; i++)
-        string.push(String.fromCharCode(this[i]));
-    return string.join('');
-};
 
 export default Image;
