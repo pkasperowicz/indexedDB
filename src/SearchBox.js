@@ -1,17 +1,19 @@
 // @flow
 import React, {Component} from 'react';
 
+type Props = {
+    onChange: (string) => any
+};
+
 class SearchBox extends Component {
 
     state : {
         value: string
     };
 
-    props : {
-        onChange: (string) => any
-    };
+    props : Props;
 
-    constructor(props: {}, context: {}) {
+    constructor(props: Props, context: {}) {
         super(props, context);
         this.state = {
             value: ''
@@ -19,8 +21,8 @@ class SearchBox extends Component {
     }
 
     onChange (e : Event) {
-        if (e.target instanceof HTMLInputElement) {
-            let value = e.target.value;
+        let value = e.target.value || '';
+        if (typeof value === 'string' || value instanceof String) {
             this.setState({value});
             this.props.onChange(value);
         }
